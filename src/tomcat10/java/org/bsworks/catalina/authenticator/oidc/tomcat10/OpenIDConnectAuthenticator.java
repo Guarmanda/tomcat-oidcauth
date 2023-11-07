@@ -1,4 +1,4 @@
-package org.bsworks.catalina.authenticator.oidc.tomcat90;
+package org.bsworks.catalina.authenticator.oidc.tomcat10;
 
 import java.io.IOException;
 
