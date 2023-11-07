@@ -1,6 +1,6 @@
 # OpenID Connect Authenticator for Tomcat
 
-This is an authenticator implementation for [Apache Tomcat](http://tomcat.apache.org/) 9.0 and 8.5 that allows web-applications to use [OpenID Connect](http://openid.net/connect/) to log users in.
+This is an authenticator implementation for [Apache Tomcat](http://tomcat.apache.org/) 10 that allows web-applications to use [OpenID Connect](http://openid.net/connect/) to log users in.
 
 References to Tomcat documenation in this manual link to Tomcat version 9.0. Corresponding pages for Tomcat 8.5 can be easily found on the Apache Tomcat website.
 
@@ -116,7 +116,7 @@ In addition to the attributes described above, all the attributes of the standar
 Here is an example of the valve configuration with multiple OpenID Providers and use of the email address as the username:
 
 ```xml
-<Valve className="org.bsworks.catalina.authenticator.oidc.tomcat85.OpenIDConnectAuthenticator"
+<Valve className="org.bsworks.catalina.authenticator.oidc.tomcat10.OpenIDConnectAuthenticator"
        providers="[
            {
                name: Auth0,
