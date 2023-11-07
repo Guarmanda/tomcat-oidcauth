@@ -29,8 +29,8 @@ import java.util.regex.Pattern;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 import org.apache.catalina.LifecycleException;
 import org.apache.catalina.Session;
@@ -38,6 +38,7 @@ import org.apache.catalina.authenticator.Constants;
 import org.apache.catalina.authenticator.FormAuthenticator;
 import org.apache.catalina.authenticator.SavedRequest;
 import org.apache.catalina.connector.Request;
+import org.apache.coyote.ContinueResponseTiming;
 import org.apache.juli.logging.Log;
 import org.apache.juli.logging.LogFactory;
 import org.apache.tomcat.util.buf.HexUtils;
@@ -903,7 +904,7 @@ public abstract class BaseOpenIDConnectAuthenticator
 		// authentication submission (either form or OP response redirect):
 
 		// acknowledge the request
-		request.getResponse().sendAcknowledgement();
+		request.getResponse().sendAcknowledgement(ContinueResponseTiming.ALWAYS);
 
 		// set response character encoding
 		if (this.characterEncoding != null)

@@ -7,8 +7,8 @@ plugins {
 	id 'maven-publish'
 }
 
-sourceCompatibility = '1.8'
-targetCompatibility = '1.8'
+sourceCompatibility = '17'
+targetCompatibility = '17'
 
 group = 'org.bsworks.catalina.authenticator.oidc'
 version = '2.5.0'
@@ -18,20 +18,15 @@ jar.enabled = false
 javadoc.enabled = false
 
 sourceSets {
-	mainTomcat85 {
+	mainTomcat10 {
 		java {
-			srcDirs = ['src/common/java', 'src/tomcat85/java']
-		}
-	}
-	mainTomcat90 {
-		java {
-			srcDirs = ['src/common/java', 'src/tomcat90/java']
+			srcDirs = ['src/common/java', 'src/tomcat10/java']
 		}
 	}
 }
 
 task compileJava(type: JavaCompile, overwrite: true) {
-	dependsOn compileMainTomcat85Java, compileMainTomcat90Java
+	dependsOn compileMainTomcat10Java
 }
 
 ext.sharedManifest = manifest {
@@ -42,16 +37,10 @@ ext.sharedManifest = manifest {
 	)
 }
 
-task mainTomcat85Jar(type: Jar) {
-	classifier 'tomcat85'
-	from sourceSets.mainTomcat85.output
-	manifest = project.manifest {
-		from sharedManifest
-	}
-}
-task mainTomcat90Jar(type: Jar) {
-	classifier 'tomcat90'
-	from sourceSets.mainTomcat90.output
+
+task mainTomcat10Jar(type: Jar) {
+	archiveClassifier = 'tomcat10'
+	from sourceSets.mainTomcat10.output
 	manifest = project.manifest {
 		from sharedManifest
 	}
@@ -62,22 +51,16 @@ repositories {
 }
 
 dependencies {
-	mainTomcat85Implementation(
-		'org.apache.tomcat:tomcat-catalina:[8.5.50,8.6.0)',
-		'org.apache.tomcat:tomcat-juli:[8.5.50,8.6.0)',
-		'org.apache.tomcat:tomcat-util:[8.5.50,8.6.0)'
-	)
-	mainTomcat90Implementation(
-		'org.apache.tomcat:tomcat-catalina:[9.0.30,9.1.0)',
-		'org.apache.tomcat:tomcat-juli:[9.0.30,9.1.0)',
-		'org.apache.tomcat:tomcat-util:[9.0.30,9.1.0)'
+	mainTomcat10Implementation(
+		'org.apache.tomcat:tomcat-catalina:[10.0.0,10.1.15]',
+		'org.apache.tomcat:tomcat-juli:[10.0.0,10.1.15]',
+		'org.apache.tomcat:tomcat-util:[10.0.0,10.1.15]'
 	)
 }
 
 artifacts {
 	archives(
-		mainTomcat85Jar,
-		mainTomcat90Jar
+		mainTomcat10Jar
 	)
 }
 
@@ -87,7 +70,7 @@ publishing {
 			pom {
 				name = 'OpenID Connect Authenticator'
 				description = 'Apache Tomcat authenticator implementation that extends the standard form-based authenticator and adds OpenID Connect functionality.'
-				url = 'https://github.com/boylesoftware/tomcat-oidcauth'
+				url = 'https://github.com/Guarmanda/tomcat-oidcauth'
 				inceptionYear = '2015'
 				licenses {
 					license {
@@ -108,16 +91,15 @@ publishing {
 					}
 				}
 				scm {
-					connection = 'scm:git:https://github.com/boylesoftware/tomcat-oidcauth.git'
-					developerConnection = 'scm:git:git@github.com:boylesoftware/tomcat-oidcauth.git'
+					connection = 'scm:git:https://github.com/Guarmanda/tomcat-oidcauth.git'
+					developerConnection = 'scm:git:git@github.com:Guarmanda/tomcat-oidcauth.git'
 				}
 				issueManagement {
 					system = 'GitHub'
-					url = 'https://github.com/boylesoftware/tomcat-oidcauth/issues'
+					url = 'https://github.com/Guarmanda/tomcat-oidcauth/issues'
 				}
 			}
-			artifact mainTomcat85Jar
-			artifact mainTomcat90Jar
+			artifact mainTomcat10Jar
 		}
 	}
 	repositories {

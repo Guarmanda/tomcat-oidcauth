@@ -133,17 +133,7 @@ abstract class ConfigProvider<T> {
 			synchronized (this) {
 				if (System.currentTimeMillis() > this.expireAt - EXP_GAP) {
 					this.expireAt = 0;
-					try {
-						this.loadDocument();
-					} catch (final IOException e) {
-						if (this.optional) {
-							this.log.error("Error loading optional configuration document from "
-									+ this.documentURL + ". Will retry.", e);
-							this.expireAt = System.currentTimeMillis() + this.retryTimeout;
-						} else {
-							throw e;
-						}
-					}
+					this.loadDocument();
 				}
 			}
 		}
@@ -157,7 +147,7 @@ abstract class ConfigProvider<T> {
 	 * @throws IOException If an I/O error happens and the document is not
 	 * optional.
 	 */
-	protected void loadDocument() throws IOException {
+	protected void loadDocument() {
 
 		// log the load
 		final boolean debug = this.log.isDebugEnabled();
@@ -165,25 +155,44 @@ abstract class ConfigProvider<T> {
 			this.log.debug("loading document from " + this.documentURL);
 
 		// configure document load connection
-		final HttpURLConnection con =
-			(HttpURLConnection) this.documentURL.openConnection();
+		HttpURLConnection con = null;
+		try {
+			con = (HttpURLConnection) this.documentURL.openConnection();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		con.setConnectTimeout(this.httpConnectTimeout);
 		con.setReadTimeout(this.httpReadTimeout);
 		con.addRequestProperty("Accept",
 			"application/jwk-set+json, application/json");
 
 		// read and parse the document
-		final JSONObject document;
-		try (Reader in = new InputStreamReader(con.getInputStream(), UTF8)) {
+		 JSONObject document = null;
+		try {
+			Reader in = new InputStreamReader(con.getInputStream(), UTF8);
 			document = new JSONObject(new JSONTokener(in));
+		} catch (final IOException e) {
+			if (this.optional) {
+				this.log.error("Error loading optional configuration document from "
+						+ this.documentURL + ". Will retry.", e);
+				this.expireAt = System.currentTimeMillis() + this.retryTimeout;
+				return;
+			} 
 		}
+		if(document == null) return;
 
 		// log the response
-		if (debug)
-			this.log.debug("received document: " + document.toString());
+		//if (debug)
+			System.out.println("received document: " + document.toString());
 
 		// parse and store the loaded configuration
-		this.cachedConfig = this.parseDocument(document);
+		try {
+			this.cachedConfig = this.parseDocument(document);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 
 		// determine cache expiration
 		long responseDate = con.getDate();
